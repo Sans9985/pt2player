@@ -4,7 +4,7 @@ from pygame import mixer
 
 mixer.pre_init()
 mixer.init()
-vol = 0.16
+vol = 0.15
 
 def setchannels(c: int) -> None:
     mixer.set_num_channels(c)
@@ -142,18 +142,18 @@ def playsong(song:str, tempo:float) -> None:
 
     for i in range(len(song)):
         if len(song[i]) == 1:
+            l = 0
             if len(song[i][0]) > 1:
-                l = 0
                 for j in range(len(song[i][0])):
                     n = mutes.index(song[i][0][j])
                     l += tick[n]
-                print(f"{' ' * 50} {song[i][0]:16s} {str(i):5s}")
+                print(f"{str(i+1):>5} {' ' * 50} {song[i][0]:16s} {round(l*1000,1)}ms")
                 sleep(l)
             else:
                 if song[i][0] == "":
                     break
                 n = mutes.index(song[i][0])
-                print(f"{' ' * 50} {song[i][0]:16s} {str(i):5s}")
+                print(f"{str(i+1):>5} {' ' * 50} {song[i][0]:16s} {round(tick[n]*1000,1)}ms")
                 sleep(tick[n])
         else:
             if len(song[i][1]) > 1:
@@ -165,7 +165,7 @@ def playsong(song:str, tempo:float) -> None:
                 n = lengths.index(song[i][1])
                 l = tick[n]
 
-            print(f"{song[i][0]:50s} {song[i][1]:16s} {str(i):5s} {round(l*1000,1)}ms")
+            print(f"{str(i+1):>5} {song[i][0]:50s} {song[i][1]:16s} {round(l*1000,1)}ms")
             playsounds(song[i][0], l)
 
 
@@ -176,7 +176,10 @@ try:
 except:
     exit("\nfile not found; is it in the 'songs' folder?")
 print(f"\nSong: {name}")
-for i in range(0,len(data),2):
+i = 0
+while i < len(data):
+    if data[i].startswith(":"):
+        del data[i]
     h = float(data[i].strip())
     s = data[i+1].strip()
     print(f"""
@@ -184,5 +187,6 @@ for i in range(0,len(data),2):
  Tempo: {h} bpm
 """)
     playsong(s,h)
+    i += 2
 
 print("\n ========================== end ==========================\n")
