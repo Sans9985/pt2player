@@ -1,3 +1,4 @@
+: comments can go anywhere (in a new line of course)
 100
 c[M],c1[M],(f.f1)[L],c[M],c1[M],(c.f.f1)[L],
 100

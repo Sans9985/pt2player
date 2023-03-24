@@ -1,6 +1,17 @@
 from time import sleep
 from mido import bpm2tempo, tempo2bpm
 from pygame import mixer
+from threading import Thread
+from os import chdir
+
+loc = __file__.split("\\")[:-1]
+
+path = ""
+for i in range(len(loc)):
+    path = path + loc[i]
+
+chdir(path)
+del chdir
 
 mixer.pre_init()
 mixer.init()
@@ -25,7 +36,27 @@ class Calculator:
         else:
             return -1.0
 
+def checkerrors(song:str) -> None:
+    song = song.replace(";", ",")
+    commas = song.count(",")
+    song = song.split(",")
+
+    if len(song) - 1 < commas:
+        print(len(song) - 1, commas)
+        raise SyntaxError("There is a missing comma somewhere (can't locate it yet)")
+
+    for i in range(len(song)):
+        notebrackets = (song[i].count("["), song[i].count("]"))
+        if notebrackets[0] != notebrackets[1]:
+            raise SyntaxError(f"Missing bracket at note {i+1}")
+
+        brackets = (song[i].count("("), song[i].count(")"))
+        if ((brackets[0] != 0 and brackets[1] != 0) and ("." or "@" or "~" or "!" or "%" in song[i])):
+            raise SyntaxError(f"Missing '(' or ')' at note {i+1}")
+
+
 def playsounds(sounds:str, length:float) -> None:
+    c = 0.02
     if sounds == '':
         return
 
@@ -46,8 +77,8 @@ def playsounds(sounds:str, length:float) -> None:
                 mixer.Sound(f"sounds/{sounds[i]}.mp3").play().set_volume(vol)
 
             s = False
-            length -= 0.08
-            sleep(0.08)
+            length -= c * 4
+            sleep(c * 4)
 
     if "@" in sounds:
         sounds = sounds.split("@")
@@ -62,8 +93,8 @@ def playsounds(sounds:str, length:float) -> None:
                     mixer.Sound(f"sounds/{sounds[i][j]}.mp3").play().set_volume(vol)
 
             s = False
-            length -= 0.06
-            sleep(0.06)
+            length -= c * 3
+            sleep(c * 3)
 
     if "!" in sounds:
         sounds = sounds.split("!")
@@ -78,8 +109,8 @@ def playsounds(sounds:str, length:float) -> None:
                     mixer.Sound(f"sounds/{sounds[i][j]}.mp3").play().set_volume(vol)
             s = False
 
-            length -= 0.04
-            sleep(0.04)
+            length -= c * 2
+            sleep(c * 2)
 
     if "~" in sounds:
         sounds = sounds.split("~")
@@ -106,20 +137,22 @@ def playsounds(sounds:str, length:float) -> None:
         mixer.Sound(f"sounds/{sounds}.mp3").play().set_volume(vol)
 
     if length != 0:
-        if length > 0.01:
-            sleep(length - 0.01)
+        if length > 0.015:
+            sleep(length - 0.015)
 
 def playsong(song:str, tempo:float) -> None:
+    checkerrors(song)
     if tempo < 0.001:
         raise ValueError('Tempo must be at least 0.001')
+
     mutes:list[str] = ["Q", "R", "S", "T", "U", "V", "W", "X", "Y"]
     lengths:list[str] = ["H", "I", "J", "K", "L", "M", "N", "O", "P"]
     tick:list[float] = [
-        bpm2tempo(tempo) / 31250 * 0.25,   # H
-        bpm2tempo(tempo) / 62500 * 0.25,   # I
-        bpm2tempo(tempo) / 125000 * 0.25,  # J
-        bpm2tempo(tempo) / 250000 * 0.25,  # K
-        bpm2tempo(tempo) / 500000 * 0.25,  # L
+        bpm2tempo(tempo) /   31250 * 0.25, # H
+        bpm2tempo(tempo) /   62500 * 0.25, # I
+        bpm2tempo(tempo) /  125000 * 0.25, # J
+        bpm2tempo(tempo) /  250000 * 0.25, # K
+        bpm2tempo(tempo) /  500000 * 0.25, # L
         bpm2tempo(tempo) / 1000000 * 0.25, # M
         bpm2tempo(tempo) / 2000000 * 0.25, # N
         bpm2tempo(tempo) / 4000000 * 0.25, # O
@@ -131,7 +164,6 @@ def playsong(song:str, tempo:float) -> None:
         song = song.replace(ss, "")
 
     song = song.replace(";", ",")
-
     song = song.split(",")
     if song[-1] == '':
         del song[-1]
@@ -166,25 +198,38 @@ def playsong(song:str, tempo:float) -> None:
                 l = tick[n]
 
             print(f"{str(i+1):>5} {song[i][0]:50s} {song[i][1]:16s} {round(l*1000,1)}ms")
-            playsounds(song[i][0], l)
 
+            th = Thread(target=playsounds, args=(song[i][0], l, ))
+            th.start()
+            th.join()
 
 name = input("enter the song you want to play: ")
 try:
-    with open(f"songs/{name}.txt") as f:
+    with open(f"songs/{name}.pt2") as f:
         data = f.readlines()
 except:
     exit("\nfile not found; is it in the 'songs' folder?")
-print(f"\nSong: {name}")
+
+print(f"\nSong: {name} (from file: songs/{name}.pt2)")
+
 i = 0
 while i < len(data):
     if data[i].startswith(":"):
         del data[i]
-    h = float(data[i].strip())
-    s = data[i+1].strip()
+        i = -1
+    i += 1
+
+i = 0
+while i < len(data):
+    if len(data) >= 2:
+        h = float(data[i].strip())
+        s = data[i+1].strip()
+    else:
+        exit("Empty song!")
+
     print(f"""
- ========================= Part {(i // 2) + 1} =========================
- Tempo: {h} bpm
+========================= Part {(i // 2) + 1} =========================
+Tempo: {h} bpm
 """)
     playsong(s,h)
     i += 2
