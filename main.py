@@ -8,7 +8,10 @@ loc = __file__.split("\\")[:-1]
 
 path = ""
 for i in range(len(loc)):
-    path = path + loc[i]
+    if path != "":
+        path = path + "/" + loc[i]
+    else:
+        path = loc[i]
 
 chdir(path)
 del chdir
@@ -51,7 +54,7 @@ def checkerrors(song:str) -> None:
             raise SyntaxError(f"Missing bracket at note {i+1}")
 
         brackets = (song[i].count("("), song[i].count(")"))
-        if ((brackets[0] != 0 and brackets[1] != 0) and ("." or "@" or "~" or "!" or "%" in song[i])):
+        if ((brackets[0] != 0 and brackets[1] != 0) and (brackets[0] != brackets[1]) and ("." or "@" or "~" or "!" or "%" in song[i])):
             raise SyntaxError(f"Missing '(' or ')' at note {i+1}")
 
 
