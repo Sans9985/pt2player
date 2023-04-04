@@ -4,7 +4,6 @@ from pygame import mixer
 from threading import Thread
 from os import chdir
 
-version = 0, 2, 0
 
 loc = __file__.split("\\")[:-1]
 
@@ -18,10 +17,12 @@ for i in range(len(loc)):
 chdir(path)
 del chdir
 
-soundpath = "sounds/1"
 
 mixer.pre_init()
 mixer.init()
+
+soundpath = "sounds/1"
+version = 0, 2, 0
 vol = 0.15
 
 def setchannels(c: int) -> None:
@@ -216,77 +217,74 @@ def playsong(song:str, tempo:float) -> None:
                 th.start()
                 th.join()
 
-def main():
-    st = True
-    print("you can change the soundset by inputting 'set soundset <value>' according to the folders in sounds/\n(by default, this is 1)\n")
-    while st:
-        name = input("> ").strip()
-        if name == "exit":
-            st = False
-        elif name.startswith("set "):
-            option = name.split(" ",1)[1].split()
-            if option[0] == "soundset":
-                soundpath = f"sounds/{option[1]}"
-                print(f"using sounds from sounds/{option[1]}")
+st = True
+print("you can change the soundset by inputting 'set soundset <value>' according to the folders in sounds/\n(by default, this is 1)\n")
+while st:
+    name = input("> ").strip()
+    if name == "exit":
+        st = False
+    elif name.startswith("set "):
+        option = name.split(" ",1)[1].split()
+        if option[0] == "soundset":
+            soundpath = f"sounds/{option[1]}"
+            print(f"using sounds from sounds/{option[1]}")
 
-            elif option[0] == "volume":
-                if option[1] == "default":
-                    vol = 0.15
-                    print("volume has been set to default value (15%)")
+        elif option[0] == "volume":
+            if option[1] == "default":
+                vol = 0.15
+                print("volume has been set to default value (15%)")
+            else:
+                vol = float(option[1]) / 100.0
+                print(f"volume has been set to {option[1]}%")
+
+        else:
+            print("option doesn't exist; options are:\n - soundset\n - volume")
+
+    elif name.startswith("play "):
+        name = name.split(" ",1)[1]
+        try:
+            with open(f"songs/{name}.pt2") as f:
+                data = f.readlines()
+            d = 1
+
+        except:
+            print(f"\nfile (songs/{name}.pt2) not found")
+            d = 0
+
+        if d == 1:
+            print(f"\nsong: {name} (from file: songs/{name}.pt2)")
+
+            i = 0
+            while i < len(data):
+                if data[i].startswith(":"):
+                    del data[i]
+                    i = -1
+                i += 1
+
+            i = 0
+            while i < len(data):
+                if len(data) >= 2:
+                    tempo = float(data[i].strip())
+                    songdata = data[i+1].strip()
                 else:
-                    vol = float(option[1]) / 100.0
-                    print(f"volume has been set to {option[1]}%")
+                    print("empty song")
 
-            else:
-                print("option doesn't exist; options are:\n - soundset\n - volume")
+                print(f"""
+========================= Part {(i // 2) + 1} =========================
+Tempo: {tempo} bpm
+            """)
+                playsong(songdata,tempo)
+                i += 2
 
-        elif name.startswith("play "):
-            name = name.split(" ",1)[1]
-            try:
-                with open(f"songs/{name}.pt2") as f:
-                    data = f.readlines()
-                d = 1
+            print("\n ========================== end ==========================\n")
 
-            except:
-                print(f"\nfile (songs/{name}.pt2) not found")
-                d = 0
-
-            if d == 1:
-                print(f"\nsong: {name} (from file: songs/{name}.pt2)")
-
-                i = 0
-                while i < len(data):
-                    if data[i].startswith(":"):
-                        del data[i]
-                        i = -1
-                    i += 1
-
-                i = 0
-                while i < len(data):
-                    if len(data) >= 2:
-                        tempo = float(data[i].strip())
-                        songdata = data[i+1].strip()
-                    else:
-                        print("empty song")
-
-                    print(f"""
-    ========================= Part {(i // 2) + 1} =========================
-    Tempo: {tempo} bpm
-                """)
-                    playsong(songdata,tempo)
-                    i += 2
-
-                print("\n ========================== end ==========================\n")
-
-        elif name.startswith("sound "):
-            s = name.split(" ",1)[1]
-            s = s.split()
-            if 1 > len(s) > 3:
-                print("sound command must have 2 arguments: 'sound' and 'bpm'")
-            else:
-                playsong(s[0],float(s[1]))
-        
-        elif name == "version":
-            print(f"\npt2player ver. {version}\n")
-
-if __name__ == '__main__': main()
+    elif name.startswith("sound "):
+        s = name.split(" ",1)[1]
+        s = s.split()
+        if 1 > len(s) > 3:
+            print("sound command must have 2 arguments: 'sound' and 'bpm'")
+        else:
+            playsong(s[0],float(s[1]))
+    
+    elif name == "version":
+        print(f"\npt2player ver. {version}\n")
