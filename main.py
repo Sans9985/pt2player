@@ -20,7 +20,7 @@ mixer.pre_init()
 mixer.init()
 
 soundpath = "sounds/1"
-version = 0, 2, 0
+version = 0, 2, 1
 vol = 0.15
 
 def setchannels(c: int) -> None:
