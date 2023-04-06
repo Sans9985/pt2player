@@ -20,6 +20,8 @@ to _comment_ out something inside a song file (`songs/*.pt2`), start a line with
 to _stop_ a song while playing, include a double separator (`,,` or `;;`) somewhere in an uncommented line
 
 ## changelog:
+  * v0.2.1b:
+    - fixed `,,` and `;;` behaviour
   * v0.2.1:
     - fixed a bug with the `sound` command where it would crash if only the code was provided, but not the tempo
     - "better" documentation

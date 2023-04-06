@@ -20,7 +20,7 @@ mixer.pre_init()
 mixer.init()
 
 soundpath = "sounds/1"
-version = 0, 2, 1
+version = "0.2.1b"
 vol = 0.15
 
 def setchannels(c: int) -> None:
@@ -245,15 +245,16 @@ while st:
             print("option doesn't exist; options are:\n - soundset\n - volume")
 
     elif name.startswith("play "):
-        name = name.split(" ",1)[1]
+        f: int = 0
+        name: str = name.split(" ",1)[1]
         try:
             with open(f"songs/{name}.pt2") as f:
-                data = f.readlines()
-            d = 1
+                data: list[str] = f.readlines()
+            d: int = 1
 
         except:
             print(f"\nfile (songs/{name}.pt2) not found")
-            d = 0
+            d: int = 0
 
         if d == 1:
             print(f"\nsong: {name} (from file: songs/{name}.pt2)")
@@ -265,20 +266,30 @@ while st:
                     i = -1
                 i += 1
 
-            i = 0
+    
+            i: int = 0
             while i < len(data):
                 if len(data) >= 2:
-                    tempo = float(data[i].strip())
-                    songdata = data[i+1].strip()
+                    tempo: float = float(data[i].strip())
+                    songdata: str = data[i+1].strip()
+                    if ";;" in songdata:
+                        songdata = songdata.split(";;")[0]
+                        f = 1
+                    if ",," in songdata:
+                        songdata = songdata.split(",,")[0]
+                        f = 1
                 else:
                     print("empty song")
-
+    
                 print(f"""
 ========================= Part {(i // 2) + 1} =========================
 Tempo: {tempo} bpm
             """)
                 playsong(songdata,tempo)
                 i += 2
+
+                if f == 1:
+                    break
 
             print("\n ========================== end ==========================\n")
 
