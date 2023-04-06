@@ -8,9 +8,22 @@ the details in question:
   - the length code in json data
   - the length of the note in milliseconds
 
+## requirements
+ - pygame: `pip install pygame` (use `pip install pygame==2.4.0dev2` for better performance)
+ - mido: `pip install mido`
+
 *note: some minor/major performance leaks can happen when playing heavy chords (6+ notes) or repeatedly playing chords (even 2 note ones)*
+*this can (partially) be fixed with `pip install pygame==2.4.0dev2`*
+
+to _comment_ out something inside a song file (`songs/*.pt2`), start a line with `:` and type whatever you want after.
+
+to _stop_ a song while playing, include a double separator (`,,` or `;;`) somewhere in an uncommented line
 
 ## changelog:
+  * v0.2.1:
+    - fixed a bug with the `sound` command where it would crash if only the code was provided, but not the tempo
+    - "better" documentation
+    - deleted `readme.md` from `songs/`
   * v0.2.0:
     - added a console interface with 4 commands:
       - `version` - prints the current version

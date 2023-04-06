@@ -1,9 +1,8 @@
 from time import sleep
 from mido import bpm2tempo, tempo2bpm
-from pygame import mixer
+from pygame import mixer, version as pygver
 from threading import Thread
 from os import chdir
-
 
 loc = __file__.split("\\")[:-1]
 
@@ -16,7 +15,6 @@ for i in range(len(loc)):
 
 chdir(path)
 del chdir
-
 
 mixer.pre_init()
 mixer.init()
@@ -218,7 +216,13 @@ def playsong(song:str, tempo:float) -> None:
                 th.join()
 
 st = True
-print("you can change the soundset by inputting 'set soundset <value>' according to the folders in sounds/\n(by default, this is 1)\n")
+print("\nyou can change the soundset by typing 'set soundset <value>' according to the folders in sounds/\n(by default, this is 1)")
+
+if pygver.ver <= "2.4.0":
+    print(f"pygame {pygver.ver} was found; update to 2.4.0.dev2 for best performance\n")
+else:
+    print()
+
 while st:
     name = input("> ").strip()
     if name == "exit":
@@ -280,8 +284,12 @@ Tempo: {tempo} bpm
 
     elif name.startswith("sound "):
         s = name.split(" ",1)[1]
+        if not " " in name:
+            print("sound command must have 2 arguments: 'sound' and 'bpm'")
+
         s = s.split()
-        if 1 > len(s) > 3:
+
+        if len(s) != 2:
             print("sound command must have 2 arguments: 'sound' and 'bpm'")
         else:
             playsong(s[0],float(s[1]))
