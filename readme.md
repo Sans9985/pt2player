@@ -13,7 +13,7 @@ the details in question:
  - mido: `pip install mido`
 
 *note: some minor/major performance leaks can happen when playing heavy chords (6+ notes) or repeatedly playing chords (even 2 note ones)*
-*this can (partially) be fixed with `pip install pygame==2.4.0dev2`*
+*this can (partially) be fixed with `pip install pygame==2.4.0dev2` (or any newer version)*
 
 to _comment_ out something inside a song file (`songs/*.pt2`), start a line with `:` and type whatever you want after.
 
