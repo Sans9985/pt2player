@@ -9,7 +9,7 @@ the details in question:
   - the length of the note in milliseconds
 
 ## requirements
- - pygame: `pip install pygame` (use `pip install pygame==2.4.0dev2` for better performance)
+ - pygame: `pip install pygame` (any version from 2.4.0dev3 works)
  - mido: `pip install mido`
 
 *note: some minor/major performance leaks can happen when playing heavy chords (6+ notes) or repeatedly playing chords (even 2 note ones)*
