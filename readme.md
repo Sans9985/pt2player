@@ -31,7 +31,7 @@ to _stop_ a song while playing, include a double separator (`,,` or `;;`) somewh
   * v0.2.0:
     - added a console interface with 4 commands:
       - `version` - prints the current version
-      - `sound <sounds> <tempo>` - plays a short sequence of songs as if it was a whole song
+      - `sound <sounds> <tempo>` - plays a short sequence of notes as if it was a whole song
       - `play <filename>` - plays a song from a file (as in previous versions)
       - `set <setting> <value>` - changes settings. there are 2 settings:
         1. `volume` - changes the volume
