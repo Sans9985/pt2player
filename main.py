@@ -1,6 +1,5 @@
 from time import sleep
 from pygame import mixer, version as pygver
-from multiprocessing import Pool
 from os import chdir
 
 try:
@@ -235,22 +234,23 @@ if __name__ == '__main__':
         elif name.startswith("set"):
             try:
                 name: str = name.split(" ",1)[1]
-                option = name.split(" ",1)[1].split()
+                (name, option) = name.split(" ", 1)
+                # option = name.split(" ",1)[1].split()
             except IndexError:
                 print("set <option> <value>")
                 continue
 
-            if option[0] == "soundset":
-                soundpath = f"sounds/{option[1]}"
-                print(f"using sounds from sounds/{option[1]}")
+            if name == "soundset":
+                soundpath = f"sounds/{option}"
+                print(f"using sounds from sounds/{option}")
 
-            elif option[0] == "volume":
-                if option[1] == "default":
+            elif name == "volume":
+                if option == "default":
                     vol = 0.15
                     print("volume has been set to default value (15%)")
                 else:
-                    vol = float(option[1]) / 100.0
-                    print(f"volume has been set to {option[1]}%")
+                    vol = float(option) / 100.0
+                    print(f"volume has been set to {option}%")
 
             else:
                 print("option doesn't exist; options are:\n - soundset\n - volume")
